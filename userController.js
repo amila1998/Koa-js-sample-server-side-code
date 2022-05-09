@@ -1,5 +1,8 @@
 import { users } from "./userData.js";
+import jwt from  'jsonwebtoken';
+import config from "./config.js";
 let message,status;
+
 
 export const addData = async (ctx)=>{
     try {
@@ -18,7 +21,8 @@ export const addData = async (ctx)=>{
                    name: name, 
                    email: email, 
                 });
-                message={msg:"Adding Data Successfull !!! :)"};
+                const accesstoken = createAccessToken({email: email})
+                message={msg:"Adding Data Successfull !!! :)",token:accesstoken};
                 status=200;
             }
         }
@@ -43,4 +47,28 @@ export const readAllData = async(ctx) =>{
     }
     ctx.body = message;
     ctx.status = status;
+}
+
+export const  getUser = async(ctx)=>{
+    try {
+        const user = await users.has(ctx.request.user.email);
+        if(!user){
+            status=400;
+            message="User does not exist.";
+        }else{
+            const userDetails = await users.get(ctx.request.user.email);
+            status=200;
+            message=userDetails;
+        }
+
+    } catch (err) {
+        status=500;
+        message=err.message;
+    }
+    ctx.body = message;
+    ctx.status = status;
+}
+
+const createAccessToken = (user) =>{
+    return jwt.sign(user, config.ACCESS_TOKEN_SECRET , {expiresIn: '30m'})
 }
