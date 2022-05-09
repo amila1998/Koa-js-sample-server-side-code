@@ -1,13 +1,18 @@
 // index.js
 import Koa from 'koa';
+import bodyparser from 'koa-bodyparser';
+import json from "koa-json";
 
+import userRouter  from './userRouter.js';
 
 const app = new Koa();
 
-// Our First Route
-app.use(async ctx => {
-	ctx.body = 'Hello World';
-});
+//middlewares
+app.use(bodyparser());
+app.use(json());
+
+//Routes
+app.use(userRouter.routes()).use(userRouter.allowedMethods());
 
 // Bootstrap the server
 app.listen(5000,()=>{
