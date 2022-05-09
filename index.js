@@ -1,5 +1,7 @@
 // index.js
-const Koa = require('koa');
+import Koa from 'koa';
+
+
 const app = new Koa();
 
 // Our First Route
